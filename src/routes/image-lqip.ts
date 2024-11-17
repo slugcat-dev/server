@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import { isURL } from '../utils'
 import { ofetch } from 'ofetch'
 import sharp from 'sharp'
 
@@ -6,7 +7,7 @@ import sharp from 'sharp'
 export async function get(req: Request, res: Response) {
 	const { url } = req.query
 
-	if (!url || typeof url !== 'string')
+	if (!url || typeof url !== 'string' || !isURL(url))
 		return res.status(400).send('Image URL required')
 
 	try {
@@ -19,7 +20,8 @@ export async function get(req: Request, res: Response) {
 
 		res.set('Content-Type', 'image/avif')
 		res.send(lqipBuffer)
-	} catch {
+	} catch (err) {
 		res.status(500).send('Error processing image')
+		console.error(err)
 	}
 }
