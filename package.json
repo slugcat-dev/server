@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Server for https://github.com/slugcat-dev/client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slugcat-dev/server.git"
+  },
+  "keywords": [],
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "rm -rf dist && tsc"
+  },
+  "main": "dist/server.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-file-routing": "^3.0.3",
+    "ofetch": "^1.4.1",
+    "puppeteer": "^23.8.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "license": "MIT"
+}
