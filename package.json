@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "scripts": {
-    "dev": "concurrently \"tsc -w\" \"nodemon --no-warnings --loader ./dist/esm-loader.js dist/server.js\"",
+    "dev": "concurrently \"tsc -w\" \"nodemon -q --no-warnings --loader ./dist/esm-loader.js dist/server.js\"",
     "build": "rm -rf dist && tsc"
   },
   "main": "dist/server.js",
@@ -21,6 +21,7 @@
     "ofetch": "^1.4.1",
     "puppeteer": "^23.8.0",
     "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-adblocker": "^2.13.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "sharp": "^0.33.5"
   },
