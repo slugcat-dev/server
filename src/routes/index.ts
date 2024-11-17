@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
 
 export async function get(req: Request, res: Response) {
-	res.send('Hello, World!')
+	res.send('API Server')
 }
