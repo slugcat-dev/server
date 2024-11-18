@@ -3,6 +3,7 @@ import puppeteer from 'puppeteer-extra'
 import stealth from 'puppeteer-extra-plugin-stealth'
 import adblocker from 'puppeteer-extra-plugin-adblocker'
 import { isURL, userAgent } from '../utils'
+import net from 'net'
 import type { Page } from 'puppeteer'
 
 const browser = await puppeteer
@@ -16,6 +17,11 @@ export async function get(req: Request, res: Response) {
 
 	if (!url || typeof url !== 'string' || !isURL(url))
 		return res.status(400).send('URL required')
+
+	const host = new URL(url).hostname
+
+	if (host === 'localhost' || net.isIP(host))
+		return res.status(403).send('URL not allowed')
 
 	const page = await browser.newPage()
 

@@ -1,5 +1,6 @@
 import { type Request, type Response } from 'express'
 import { isURL, userAgent } from '../utils'
+import net from 'net'
 import { ofetch } from 'ofetch'
 import sharp from 'sharp'
 
@@ -9,6 +10,11 @@ export async function get(req: Request, res: Response) {
 
 	if (!url || typeof url !== 'string' || !isURL(url))
 		return res.status(400).send('URL required')
+
+	const host = new URL(url).hostname.replace(/\[|\]/g, '')
+
+	if (host === 'localhost' || net.isIP(host))
+		return res.status(403).send('URL not allowed')
 
 	try {
 		const headReq = await ofetch.raw(url, {
