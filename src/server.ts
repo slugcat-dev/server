@@ -1,20 +1,23 @@
 import 'dotenv/config'
-import express, { type NextFunction, type Request, type Response } from 'express'
+import fs from 'fs'
+import express from 'express'
 import path from 'path'
 import cors from 'cors'
 import { router } from 'express-file-routing'
 
+const port = process.env.SERVER_PORT
+const uploadDir = process.env.SERVER_UPLOAD_DIR
+
+if (!uploadDir)
+	throw Error('SERVER_UPLOAD_DIR is not defined')
+else if (!fs.existsSync(uploadDir))
+	fs.mkdirSync(uploadDir)
+
 const app = express()
 const dirname = path.dirname(new URL(import.meta.url).pathname)
-const port = process.env.SERVER_PORT
-
-function logReqTime(req: Request, res: Response, next: NextFunction) {
-	console.time(req.originalUrl)
-	res.on('finish', () => console.timeEnd(req.originalUrl))
-	next()
-}
 
 app.use(cors())
-app.use(logReqTime)
+app.use('/uploads', express.static(uploadDir))
 app.use('/', await router({ directory: path.join(dirname, 'routes') }))
+
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`))
