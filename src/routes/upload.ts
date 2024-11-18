@@ -2,7 +2,6 @@ import type { Request, Response } from 'express'
 import busboy from 'busboy'
 import { Readable } from 'stream'
 import fs from 'fs'
-import sharp from 'sharp'
 import path from 'path'
 
 interface FileInfo {
@@ -18,7 +17,7 @@ export async function post(req: Request, res: Response) {
 	const bb = busboy({ headers: req.headers })
 
 	bb.on('file', async (_, file: Readable, info: FileInfo) => {
-		if (['image'].includes(info.mimeType))
+		if (!['image', 'audio', 'video'].some(type => info.mimeType.startsWith(type)))
 			return res.status(400).send('File type not allowed')
 
 		const data: Buffer[] = []
@@ -29,9 +28,6 @@ export async function post(req: Request, res: Response) {
 			try {
 				const buffer = Buffer.concat(data)
 				const filename = `${Date.now()}-${info.filename}`
-
-				// Test if the uploaded file is really an image
-				await sharp(buffer).metadata()
 
 				fs.writeFileSync(path.join(uploadDir, filename), buffer)
 				res.send(filename)
