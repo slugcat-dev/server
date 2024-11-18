@@ -3,14 +3,13 @@ import busboy from 'busboy'
 import { Readable } from 'stream'
 import fs from 'fs'
 import path from 'path'
+import { uploadDir } from '../env'
 
 interface FileInfo {
 	filename: string
 	encoding: string
 	mimeType: string
 }
-
-const uploadDir = process.env.SERVER_UPLOAD_DIR!
 
 // Upload files
 export async function post(req: Request, res: Response) {

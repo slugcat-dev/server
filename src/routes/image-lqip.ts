@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import { isURL, userAgent } from '../utils'
+import { env } from '../env'
 import net from 'net'
 import { ofetch } from 'ofetch'
 import sharp from 'sharp'
@@ -13,7 +14,7 @@ export async function get(req: Request, res: Response) {
 
 	const host = new URL(url).hostname.replace(/\[|\]/g, '')
 
-	if (host === 'localhost' || net.isIP(host))
+	if (env !== 'development' && (host === 'localhost' || net.isIP(host)))
 		return res.status(403).send('URL not allowed')
 
 	try {
