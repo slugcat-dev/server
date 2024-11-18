@@ -2,7 +2,7 @@ import { type Request, type Response } from 'express'
 import puppeteer from 'puppeteer-extra'
 import stealth from 'puppeteer-extra-plugin-stealth'
 import adblocker from 'puppeteer-extra-plugin-adblocker'
-import { isURL } from '../utils'
+import { isURL, userAgent } from '../utils'
 import type { Page } from 'puppeteer'
 
 const browser = await puppeteer
@@ -10,6 +10,7 @@ const browser = await puppeteer
 	.use(adblocker({ blockTrackers: true }))
 	.launch({ headless: true })
 
+// Get metadata for a link, like title, description and icon
 export async function get(req: Request, res: Response) {
 	const { url } = req.query
 
@@ -19,9 +20,11 @@ export async function get(req: Request, res: Response) {
 	const page = await browser.newPage()
 
 	try {
+		await page.setUserAgent(userAgent)
 		await page.setViewport({ width: 800, height: 600 })
 		await page.setRequestInterception(true)
 
+		// Speed up page loading
 		page.on('request', req => {
 			if (['font', 'image', 'media', 'stylesheet'].includes(req.resourceType()))
 				return req.abort()
@@ -29,7 +32,7 @@ export async function get(req: Request, res: Response) {
 			req.continue()
 		})
 
-		await page.goto(url, { waitUntil: 'networkidle0', timeout: 5000 })
+		await page.goto(url, { waitUntil: 'networkidle0', timeout: 10000 })
 
 		const metadata = await getMetadata(url, page)
 

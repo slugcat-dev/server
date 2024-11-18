@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import { isURL } from '../utils'
+import { isURL, userAgent } from '../utils'
 import { ofetch } from 'ofetch'
 import sharp from 'sharp'
 
@@ -11,7 +11,10 @@ export async function get(req: Request, res: Response) {
 		return res.status(400).send('Image URL required')
 
 	try {
-		const image = await ofetch(url, { responseType: 'arrayBuffer' })
+		const image = await ofetch(url, {
+			responseType: 'arrayBuffer',
+			headers: { 'User-Agent': userAgent }
+		})
 		const lqipBuffer = await sharp(image)
 			.blur(2)
 			.resize(20)
