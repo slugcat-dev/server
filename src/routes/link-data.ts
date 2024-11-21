@@ -2,7 +2,7 @@ import { type Request, type Response } from 'express'
 import puppeteer from 'puppeteer-extra'
 import stealth from 'puppeteer-extra-plugin-stealth'
 import adblocker from 'puppeteer-extra-plugin-adblocker'
-import { isURL, userAgent } from '../utils'
+import { delay, isURL, userAgent } from '../utils'
 import { env } from '../env'
 import net from 'net'
 import type { Page } from 'puppeteer'
@@ -39,7 +39,8 @@ export async function get(req: Request, res: Response) {
 			req.continue()
 		})
 
-		await page.goto(url, { waitUntil: 'networkidle0', timeout: 10000 })
+		await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 })
+		await delay(1000)
 
 		const metadata = await getMetadata(url, page)
 
