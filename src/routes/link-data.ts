@@ -46,7 +46,7 @@ export async function get(req: Request, res: Response) {
 
 		res.json(metadata)
 	} catch (err) {
-		res.status(500).json('Error processing link')
+		res.status(500).send('Error processing link')
 		console.error(err)
 	}
 

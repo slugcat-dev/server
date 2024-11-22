@@ -13,7 +13,10 @@ interface FileInfo {
 
 // Upload files
 export async function post(req: Request, res: Response) {
-	const bb = busboy({ headers: req.headers })
+	const bb = busboy({
+		headers: req.headers,
+		limits: { fileSize: 1024 ** 3 }
+	})
 
 	bb.on('file', async (_, file: Readable, info: FileInfo) => {
 		if (!['image', 'audio', 'video'].some(type => info.mimeType.startsWith(type)))

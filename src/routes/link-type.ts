@@ -33,11 +33,12 @@ export async function get(req: Request, res: Response) {
 				width: metadata.width,
 				height: metadata.height
 			})
-		}
+		} else if (/audio|video|pdf/.test(contentType))
+			return res.json({ type: /pdf/.test(contentType) ? 'pdf' : contentType.split('/')[0] })
 
 		return res.json({ type: 'link' })
 	} catch (err) {
-		res.status(500).json('Error processing link')
+		res.status(500).send('Error processing link')
 		console.error(err)
 	}
 }
