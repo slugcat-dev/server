@@ -6,6 +6,8 @@ import { delay, isURL, userAgent } from '../utils'
 import { env } from '../env'
 import net from 'net'
 import type { Page } from 'puppeteer'
+import { ofetch } from 'ofetch'
+import sharp from 'sharp'
 
 const browser = await puppeteer
 	.use(stealth())
@@ -54,7 +56,9 @@ export async function get(req: Request, res: Response) {
 }
 
 async function getMetadata(url: string, page: Page) {
-	return page.evaluate(async (url: string) => {
+	const icon = await getIcon(page)
+
+	return page.evaluate(async ({ url, icon }) => {
 		function getMeta(query: string) {
 			const meta = document.querySelector<HTMLMetaElement>(`meta[${query} i]`)
 
@@ -69,6 +73,7 @@ async function getMetadata(url: string, page: Page) {
 				?? getMeta('name="twitter:title"')
 				?? (document.title || undefined),
 			siteName: getMeta('property="og:site_name"') ?? undefined,
+			icon,
 			description: getMeta('property="og:description"')
 				?? getMeta('name="twitter:description"')
 				?? getMeta('name="description"')
@@ -78,5 +83,43 @@ async function getMetadata(url: string, page: Page) {
 				?? undefined,
 			url
 		}
-	}, url)
+	}, { url, icon })
+}
+
+async function getIcon(page: Page) {
+	const icons = await page.evaluate(async () => [
+		...Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel*="icon" i]'))
+			.map(link => link.href)
+			.filter(href => href.length),
+		`${window.origin}/favicon.ico`
+	])
+	let closestSizeDiff = Infinity
+	let bestIcon
+
+	for (const url of icons) {
+		try {
+			const image = await ofetch(url, {
+				responseType: 'arrayBuffer',
+				headers: { 'User-Agent': userAgent }
+			})
+
+			try {
+				const metadata = await sharp(image).metadata()
+
+				if (metadata.width) {
+					const sizeDiff = Math.abs(metadata.width - 64)
+
+					if (sizeDiff < closestSizeDiff || (sizeDiff === closestSizeDiff && metadata.width > (bestIcon?.width ?? 0))) {
+						bestIcon = { url, width: metadata.width }
+						closestSizeDiff = sizeDiff
+					}
+				}
+			} catch {
+				if (url.endsWith('ico') && !bestIcon)
+					bestIcon = { url, width: 16 }
+			}
+		} catch {}
+	}
+
+	return bestIcon?.url || undefined
 }

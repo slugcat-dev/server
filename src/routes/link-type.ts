@@ -2,7 +2,7 @@ import { type Request, type Response } from 'express'
 import { isURL, userAgent } from '../utils'
 import net from 'net'
 import { env } from '../env'
-import { ofetch } from 'ofetch'
+import { FetchError, ofetch } from 'ofetch'
 import sharp from 'sharp'
 
 // Get the content type of a link
@@ -18,14 +18,27 @@ export async function get(req: Request, res: Response) {
 		return res.status(403).send('URL not allowed')
 
 	try {
-		const headReq = await ofetch.raw(url, {
-			method: 'HEAD',
-			headers: { 'User-Agent': userAgent }
-		})
+		let headReq = { headers: {
+				get: (name: string) => null as string | null
+		} }
+
+		try {
+			headReq = await ofetch.raw(url, {
+				method: 'HEAD',
+				headers: { 'User-Agent': userAgent }
+			})
+		} catch (err) {
+			if (!(err instanceof FetchError && err.statusCode && err.statusCode >= 400))
+				throw err
+		}
+
 		const contentType = headReq.headers.get('content-type') ?? ''
 
 		if (contentType.startsWith('image')) {
-			const image = await ofetch(url, { responseType: 'arrayBuffer' })
+			const image = await ofetch(url, {
+				responseType: 'arrayBuffer',
+				headers: { 'User-Agent': userAgent }
+			})
 			const metadata = await sharp(image).metadata()
 
 			return res.json({
