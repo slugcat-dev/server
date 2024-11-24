@@ -1,6 +1,6 @@
 import { validateURLParam } from '../middleware/validateURLParam'
 import { type Request, type Response } from 'express'
-import { userAgent } from '../utils'
+import { getAVMetadata, userAgent } from '../utils'
 import { FetchError, ofetch } from 'ofetch'
 import sharp from 'sharp'
 
@@ -28,7 +28,6 @@ export const get = [
 			const contentType = headReq.headers.get('content-type') ?? ''
 
 			if (contentType.startsWith('image')) {
-				// Include image size in the response
 				const image = await ofetch(url, {
 					responseType: 'arrayBuffer',
 					headers: { 'User-Agent': userAgent }
@@ -40,8 +39,27 @@ export const get = [
 					width: metadata.width,
 					height: metadata.height
 				})
-			} else if (/audio|video|pdf/.test(contentType))
-				return res.json({ type: /pdf/.test(contentType) ? 'pdf' : contentType.split('/')[0] })
+			}
+
+			if (contentType.startsWith('audio')) {
+				const filename = new URL(url).pathname.split('/').pop()
+				let metadata
+
+				try {
+					metadata = await getAVMetadata(url)
+				} catch {}
+
+				return res.json({
+					type: contentType.split('/')[0],
+					title: metadata?.tags?.title ?? filename
+				})
+			}
+
+			if (contentType.startsWith('video'))
+				return res.json({ type: 'video' })
+
+			if (contentType === 'application/pdf')
+				return res.json({ type: 'pdf' })
 
 			return res.json({ type: 'link' })
 		} catch (err) {

@@ -4,6 +4,7 @@ import { Readable } from 'stream'
 import fs from 'fs'
 import path from 'path'
 import { uploadDir } from '../env'
+import { getAVMetadata } from '../utils'
 
 interface FileInfo {
 	filename: string
@@ -30,9 +31,25 @@ export async function post(req: Request, res: Response) {
 			try {
 				const buffer = Buffer.concat(data)
 				const filename = `${Date.now()}-${info.filename}`
+				const uploadPath = path.join(uploadDir, filename)
 
-				fs.writeFileSync(path.join(uploadDir, filename), buffer)
-				res.send(filename)
+				fs.writeFileSync(uploadPath, buffer)
+
+				if (info.mimeType.startsWith('audio')) {
+					let metadata
+
+					try {
+						metadata = await getAVMetadata(uploadPath)
+					} catch {}
+
+					return res.json({
+						name: info.filename,
+						filename,
+						title: metadata?.tags?.title ?? info.filename
+					})
+				}
+
+				res.json({ name: info.filename, filename })
 			} catch (err) {
 				res.status(500).send('Error uploading file')
 				console.error(err)
