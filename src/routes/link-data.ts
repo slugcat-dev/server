@@ -1,8 +1,7 @@
-import { validateURLParam } from '../middleware/validateURLParam'
-import { type Request, type Response } from 'express'
 import puppeteer from 'puppeteer-extra'
 import stealth from 'puppeteer-extra-plugin-stealth'
 import adblocker from 'puppeteer-extra-plugin-adblocker'
+import { type Request, type Response } from 'express'
 import { delay, userAgent } from '../utils'
 import type { Page } from 'puppeteer'
 import { ofetch } from 'ofetch'
@@ -14,41 +13,38 @@ const browser = await puppeteer
 	.launch({ headless: true })
 
 // Get metadata for a link, like title, description and icon
-export const get = [
-	validateURLParam,
-	async (req: Request, res: Response) => {
-		const url = req.query.url as string
-		const page = await browser.newPage()
+export default async function getLinkData(req: Request, res: Response) {
+	const url = req.query.url as string
+	const page = await browser.newPage()
 
-		try {
-			await page.setUserAgent(userAgent)
-			await page.setViewport({ width: 800, height: 600 })
+	try {
+		await page.setUserAgent(userAgent)
+		await page.setViewport({ width: 800, height: 600 })
 
-			// Speed up page loading
-			await page.setRequestInterception(true)
+		// Speed up page loading
+		await page.setRequestInterception(true)
 
-			page.on('request', req => {
-				if (['font', 'image', 'media', 'stylesheet'].includes(req.resourceType()))
-					return req.abort()
+		page.on('request', req => {
+			if (['font', 'image', 'media', 'stylesheet'].includes(req.resourceType()))
+				return req.abort()
 
-				req.continue()
-			})
+			req.continue()
+		})
 
-			// Navigate to the page and get metadata
-			await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 })
-			await delay(1000)
+		// Navigate to the page and get metadata
+		await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 })
+		await delay(1000)
 
-			const metadata = await getMetadata(url, page)
+		const metadata = await getMetadata(url, page)
 
-			res.json(metadata)
-		} catch (err) {
-			res.status(500).send('Error processing link')
-			console.error(err)
-		}
-
-		await page.close()
+		res.json(metadata)
+	} catch (err) {
+		res.status(500).send('Error processing link')
+		console.error(err)
 	}
-]
+
+	await page.close()
+}
 
 async function getMetadata(url: string, page: Page) {
 	const icon = await getIcon(page)

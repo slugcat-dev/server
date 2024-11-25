@@ -1,19 +1,23 @@
-import 'dotenv/config'
-import { port, uploadDir } from './env'
-import fs from 'fs'
 import express from 'express'
-import path from 'path'
+import fs from 'fs'
+import config from './config'
 import cors from 'cors'
-import { router } from 'express-file-routing'
-
-if (!fs.existsSync(uploadDir))
-	fs.mkdirSync(uploadDir)
+import { router } from './router'
 
 const app = express()
-const dirname = path.dirname(new URL(import.meta.url).pathname)
 
-app.use(cors())
-app.use('/uploads', express.static(uploadDir))
-app.use('/', await router({ directory: path.join(dirname, 'routes') }))
+if (!fs.existsSync(config.uploadDir)) {
+	console.warn(`Creating "${config.uploadDir}"`)
+	fs.mkdirSync(config.uploadDir, { recursive: true })
+}
 
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`))
+app.use(cors({
+	credentials: true,
+	origin: config.allowedOrigins
+}))
+
+app.use(config.base, router)
+
+app.listen(config.port, () => {
+	console.log(`Server running on http://localhost:${config.port}`)
+})

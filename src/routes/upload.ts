@@ -3,7 +3,7 @@ import busboy from 'busboy'
 import { Readable } from 'stream'
 import fs from 'fs'
 import path from 'path'
-import { uploadDir } from '../env'
+import config from '../config'
 import { getAVMetadata } from '../utils'
 
 interface FileInfo {
@@ -13,7 +13,7 @@ interface FileInfo {
 }
 
 // Upload files
-export async function post(req: Request, res: Response) {
+export default async function postUpload(req: Request, res: Response) {
 	const bb = busboy({
 		headers: req.headers,
 		limits: { fileSize: 1024 ** 3 }
@@ -31,7 +31,7 @@ export async function post(req: Request, res: Response) {
 			try {
 				const buffer = Buffer.concat(data)
 				const filename = `${Date.now()}-${info.filename}`
-				const uploadPath = path.join(uploadDir, filename)
+				const uploadPath = path.join(config.uploadDir, filename)
 
 				fs.writeFileSync(uploadPath, buffer)
 
