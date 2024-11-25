@@ -10,7 +10,10 @@ import sharp from 'sharp'
 const browser = await puppeteer
 	.use(stealth())
 	.use(adblocker({ blockTrackers: true }))
-	.launch({ headless: true })
+	.launch({
+		headless: true,
+		args: ['--no-sandbox']
+	})
 
 // Get metadata for a link, like title, description and icon
 export default async function getLinkData(req: Request, res: Response) {
