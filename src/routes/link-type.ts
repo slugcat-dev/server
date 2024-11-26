@@ -62,12 +62,6 @@ export default async function getLinkType(req: Request, res: Response) {
 			return
 		}
 
-		if (contentType === 'application/pdf') {
-			res.json({ type: 'pdf' })
-
-			return
-		}
-
 		res.json({ type: 'link' })
 	} catch (err) {
 		res.status(500).send('Error processing link')
