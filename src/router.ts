@@ -5,6 +5,7 @@ import validateURLParam from './middleware/validateURLParam'
 import getImageLqip from './routes/image-lqip'
 import getLinkData from './routes/link-data'
 import getLinkType from './routes/link-type'
+import getProxy from './routes/proxy'
 import postUpload from './routes/upload'
 import config from './config'
 
@@ -14,5 +15,6 @@ router.get('/', getIndex)
 router.get('/image-lqip', validateURLParam, getImageLqip)
 router.get('/link-data', validateURLParam, getLinkData)
 router.get('/link-type', validateURLParam, getLinkType)
+router.get('/proxy', validateURLParam, getProxy)
 router.post('/upload', postUpload)
 router.use('/uploads', express.static(config.uploadDir))
