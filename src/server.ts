@@ -5,13 +5,19 @@ import cors from 'cors'
 import { router } from './router'
 
 const app = express()
+const allowedOrigins = config.allowedOrigins?.split(',').map(origin => origin.trim())
 
 if (!fs.existsSync(config.uploadDir))
 	fs.mkdirSync(config.uploadDir, { recursive: true })
 
 app.use(cors({
 	credentials: true,
-	origin: config.allowedOrigins
+	origin: (origin, callback) => {
+		if (!origin || !allowedOrigins || allowedOrigins.includes('*') || allowedOrigins.includes(origin))
+			callback(null, true)
+		else
+			callback(new Error('Not allowed by CORS'))
+	}
 }))
 app.use(config.base, router)
 
