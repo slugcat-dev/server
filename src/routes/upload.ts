@@ -13,13 +13,13 @@ interface FileInfo {
 }
 
 // Upload files
-export default async function postUpload(req: Request, res: Response) {
+export default function postUpload(req: Request, res: Response) {
 	const bb = busboy({
 		headers: req.headers,
 		limits: { fileSize: 1024 ** 3 }
 	})
 
-	bb.on('file', async (_, file: Readable, info: FileInfo) => {
+	bb.on('file', (_, file: Readable, info: FileInfo) => {
 		if (!['image', 'audio', 'video'].some(type => info.mimeType.startsWith(type)))
 			return res.status(400).send('File type not allowed')
 

@@ -6,16 +6,13 @@ import { router } from './router'
 
 const app = express()
 
-if (!fs.existsSync(config.uploadDir)) {
-	console.warn(`Creating "${config.uploadDir}"`)
+if (!fs.existsSync(config.uploadDir))
 	fs.mkdirSync(config.uploadDir, { recursive: true })
-}
 
 app.use(cors({
 	credentials: true,
 	origin: config.allowedOrigins
 }))
-
 app.use(config.base, router)
 
 app.listen(config.port, () => {
