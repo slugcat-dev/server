@@ -28,5 +28,5 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.9.3"
   },
-  "license": "Hippocratic-3.0"
+  "license": "MIT"
 }
