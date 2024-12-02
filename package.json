@@ -5,6 +5,7 @@
     "serve": "NODE_ENV=\"production\" esrun src/server.ts"
   },
   "dependencies": {
+    "better-sqlite3": "^11.6.0",
     "busboy": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -19,10 +20,10 @@
     "puppeteer-extra-plugin-adblocker": "^2.13.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "sharp": "^0.33.5",
-    "sqlite3": "^5.1.7",
     "typescript": "^5.7.2"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
     "@types/busboy": "^1.5.4",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",

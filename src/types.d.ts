@@ -4,6 +4,12 @@ interface OTPRecord {
 	expires: string
 }
 
+interface UserRecord {
+	id: number
+	email: string
+	created: string
+}
+
 interface User {
 	email: string
 }

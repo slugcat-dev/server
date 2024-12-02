@@ -15,7 +15,7 @@ const transporter = createTransport({
 	}
 })
 
-export function postSendOTP(req: Request, res: Response) {
+export async function postSendOTP(req: Request, res: Response) {
 	const { email } = req.body
 
 	if (!email)
@@ -29,30 +29,23 @@ export function postSendOTP(req: Request, res: Response) {
 		ON CONFLICT(email) DO UPDATE SET otp = excluded.otp, expires = excluded.expires
 	`
 
-	db.run(query, [email, otp, expires], async err => {
-		if (err) {
-			res.status(500).send('Database error')
-			console.error(err)
+	try {
+		db.prepare(query).run(email, otp, expires)
 
-			return
-		}
+		const mailPath = path.join(__dirname, '../..', 'assets', 'otp-email.html')
+		const mail = fs.readFileSync(mailPath, 'utf-8')
 
-		try {
-			const mailPath = path.join(__dirname, '../..', 'assets', 'otp-email.html')
-			const mail = fs.readFileSync(mailPath, 'utf-8')
+		await transporter.sendMail({
+			from: config.mail.from,
+			to: email,
+			subject: 'Login Code',
+			text: `Your login code is "${otp}". Enter the code in the app to log in. This code will expire in 10 minutes. If you didn't request a login code, you can ignore this email.`,
+			html: mail.replaceAll('{{ otp }}', otp)
+		})
 
-			await transporter.sendMail({
-				from: config.mail.from,
-				to: email,
-				subject: 'Login Code',
-				text: `Your login code is "${otp}". Enter the code in the app to log in. This code will expire in 10 minutes. If you didn't request a login code, you can ignore this email.`,
-				html: mail.replaceAll('{{ otp }}', otp)
-			})
-
-			res.sendStatus(204)
-		} catch (err) {
-			res.status(500).send('Error sending email')
-			console.error(err)
-		}
-	})
+		res.sendStatus(204)
+	} catch (err) {
+		res.status(500).send('Database error')
+		console.error(err)
+	}
 }
