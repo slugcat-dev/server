@@ -10,12 +10,8 @@ interface UserRecord {
 	created: string
 }
 
-interface User {
-	email: string
-}
-
 declare namespace Express {
 	export interface Request {
-		 user?: User
+		 user?: UserRecord
 	}
 }

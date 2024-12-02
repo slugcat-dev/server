@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import { ofetch } from 'ofetch'
 import { userAgent } from '../utils'
 
-export default async function getProxy(req: Request, res: Response) {
+export async function getProxy(req: Request, res: Response) {
 	const url = req.query.url as string
 
 	try {

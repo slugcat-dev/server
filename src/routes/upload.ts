@@ -13,7 +13,7 @@ interface FileInfo {
 }
 
 // Upload files
-export default function postUpload(req: Request, res: Response) {
+export function postUpload(req: Request, res: Response) {
 	const bb = busboy({
 		headers: req.headers,
 		limits: { fileSize: 1024 ** 3 }

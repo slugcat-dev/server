@@ -16,7 +16,7 @@ const browser = await puppeteer
 	})
 
 // Get metadata for a link, like title, description and icon
-export default async function getLinkData(req: Request, res: Response) {
+export async function getLinkData(req: Request, res: Response) {
 	const url = req.query.url as string
 	const page = await browser.newPage()
 

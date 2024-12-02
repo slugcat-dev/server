@@ -4,7 +4,7 @@ import { getAVMetadata, userAgent } from '../utils'
 import sharp from 'sharp'
 
 // Get the content type of a link
-export default async function getLinkType(req: Request, res: Response) {
+export async function getLinkType(req: Request, res: Response) {
 	try {
 		const url = req.query.url as string
 		let headReq = { headers: {
@@ -31,13 +31,11 @@ export default async function getLinkType(req: Request, res: Response) {
 			})
 			const metadata = await sharp(image).metadata()
 
-			res.json({
+			return void res.json({
 				type: 'image',
 				width: metadata.width,
 				height: metadata.height
 			})
-
-			return
 		}
 
 		if (contentType.startsWith('audio')) {
@@ -48,19 +46,14 @@ export default async function getLinkType(req: Request, res: Response) {
 				metadata = await getAVMetadata(url)
 			} catch {}
 
-			res.json({
+			return void res.json({
 				type: contentType.split('/')[0],
 				title: metadata?.tags?.title ?? filename
 			})
-
-			return
 		}
 
-		if (contentType.startsWith('video')) {
-			res.json({ type: 'video' })
-
-			return
-		}
+		if (contentType.startsWith('video'))
+			return void res.json({ type: 'video' })
 
 		res.json({ type: 'link' })
 	} catch (err) {

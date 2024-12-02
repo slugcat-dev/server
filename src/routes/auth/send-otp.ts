@@ -32,7 +32,7 @@ export async function postSendOTP(req: Request, res: Response) {
 	try {
 		db.prepare(query).run(email, otp, expires)
 
-		const mailPath = path.join(__dirname, '../..', 'assets', 'otp-email.html')
+		const mailPath = path.join(__dirname, '..', '..', 'assets', 'otp-email.html')
 		const mail = fs.readFileSync(mailPath, 'utf-8')
 
 		await transporter.sendMail({

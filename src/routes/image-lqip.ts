@@ -4,7 +4,7 @@ import { userAgent } from '../utils'
 import sharp from 'sharp'
 
 // Generate a low quality image placeholder (LQIP)
-export default async function getImageLqip(req: Request, res: Response) {
+export async function getImageLqip(req: Request, res: Response) {
 	try {
 		const url = req.query.url as string
 		const image = await ofetch(url, {

@@ -5,8 +5,8 @@ const env = process.env
 const config = {
 	port: env.PORT || '4000',
 	base: env.BASE_PATH || '/',
-	uploadDir: env.UPLOAD_DIR || path.join(__dirname, 'uploads'),
 	allowedOrigins: env.ALLOWED_ORIGINS,
+	uploadDir: env.UPLOAD_DIR || path.join(__dirname, 'uploads'),
 	jwtSecret: env.JWT_SECRET || '',
 	mail: {
 		server: env.MAIL_SERVER || '',

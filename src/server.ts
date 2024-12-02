@@ -1,7 +1,8 @@
 import express from 'express'
-import fs from 'fs'
 import config from './config'
+import fs from 'fs'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import { router } from './router'
 
 const app = express()
@@ -20,6 +21,7 @@ app.use(cors({
 	}
 }))
 app.use(express.json())
+app.use(cookieParser())
 app.use(config.base, router)
 
 app.listen(config.port, () => {
