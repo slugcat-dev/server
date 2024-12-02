@@ -8,6 +8,12 @@ const config = {
 	uploadDir: env.UPLOAD_DIR || path.join(__dirname, 'uploads'),
 	allowedOrigins: env.ALLOWED_ORIGINS,
 	jwtSecret: env.JWT_SECRET || '',
+	mail: {
+		server: env.MAIL_SERVER || '',
+		user: env.MAIL_USER || '',
+		pass: env.MAIL_PASS || '',
+		from: env.MAIL_FROM || ''
+	},
 	dev: (env.NODE_ENV || 'development') === 'development'
 }
 

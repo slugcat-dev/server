@@ -1,3 +1,9 @@
+interface OTPRecord {
+	email: string
+	otp: string
+	expires: string
+}
+
 interface User {
 	email: string
 }
