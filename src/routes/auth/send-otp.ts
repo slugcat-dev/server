@@ -15,6 +15,7 @@ const transporter = createTransport({
 	}
 })
 
+// Send an email with a one-time password for verification
 export async function postSendOTP(req: Request, res: Response) {
 	const { email } = req.body
 
@@ -32,6 +33,7 @@ export async function postSendOTP(req: Request, res: Response) {
 	try {
 		db.prepare(query).run(email, otp, expires)
 
+		// Use the email template
 		const mailPath = path.join(__dirname, '..', '..', 'assets', 'otp-email.html')
 		const mail = fs.readFileSync(mailPath, 'utf-8')
 
@@ -40,7 +42,7 @@ export async function postSendOTP(req: Request, res: Response) {
 			to: email,
 			subject: 'Login Code',
 			text: `Your login code is "${otp}". Enter the code in the app to log in. This code will expire in 10 minutes. If you didn't request a login code, you can ignore this email.`,
-			html: mail.replaceAll('{{ otp }}', otp)
+			html: mail.replaceAll('{{ OTP }}', otp)
 		})
 
 		res.sendStatus(204)
