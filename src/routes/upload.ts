@@ -4,7 +4,8 @@ import { Readable } from 'stream'
 import fs from 'fs'
 import path from 'path'
 import config from '../config'
-import { getAVMetadata } from '../utils'
+import { getAVMetadata, nanoid } from '../utils'
+import db from '../db'
 
 interface FileInfo {
 	filename: string
@@ -30,10 +31,13 @@ export function postUpload(req: Request, res: Response) {
 		file.on('end', async () => {
 			try {
 				const buffer = Buffer.concat(data)
-				const filename = `${Date.now()}-${info.filename}`
+				const id = nanoid()
+				const filename = `${id}-${info.filename}`
 				const uploadPath = path.join(config.uploadDir, filename)
 
 				fs.writeFileSync(uploadPath, buffer)
+				db.prepare('INSERT INTO uploads (id, owner, name, created) VALUES (?, ?, ?, ?)')
+					.run(id, req.user.id, info.filename, new Date().toISOString())
 
 				if (info.mimeType.startsWith('audio')) {
 					let metadata

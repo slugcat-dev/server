@@ -19,7 +19,7 @@ const transporter = createTransport({
 export async function postSendOTP(req: Request, res: Response) {
 	const { email } = req.body
 
-	if (!email)
+	if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
 		return void res.status(400).send('Email required')
 
 	const otp = crypto.randomBytes(3).toString('hex').toUpperCase()

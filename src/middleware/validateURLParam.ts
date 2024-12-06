@@ -4,7 +4,6 @@ import config from '../config'
 import net from 'net'
 
 export function validateURLParam(req: Request, res: Response, next: NextFunction) {
-	// Check if the URL param is present
 	const url = req.query.url
 
 	if (!url || typeof url !== 'string' || !isURL(url))

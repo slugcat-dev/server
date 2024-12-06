@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import db from '../../db'
+import { nanoid } from 'nanoid'
 import jwt from 'jsonwebtoken'
 import config from '../../config'
 
@@ -7,7 +8,7 @@ import config from '../../config'
 export async function postVerifyOTP(req: Request, res: Response) {
 	const { email, otp } = req.body
 
-	if (!email || !otp)
+	if (!email || !otp || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || !/^[A-F\d]{6}$/i.test(otp))
 		return void res.status(400).send('Email and OTP required')
 
 	try {
@@ -25,7 +26,7 @@ export async function postVerifyOTP(req: Request, res: Response) {
 
 		if (!user) {
 			// Create a new user
-			db.prepare('INSERT INTO users (email, created) VALUES (?, ?)').run(email, new Date().toISOString())
+			db.prepare('INSERT INTO users (id, email, created) VALUES (?, ?, ?)').run(nanoid(), email, new Date().toISOString())
 
 			user = userQuery.get(email) as UserRecord
 		}

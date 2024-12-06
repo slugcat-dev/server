@@ -10,6 +10,7 @@ export function auth(req: Request, res: Response, next: NextFunction) {
 		return void res.status(403).send('Acces denied')
 
 	try {
+		// Validate token and query user from the database
 		const { uid } = jwt.verify(authHeader.split(' ')[1], config.jwtSecret) as { uid: string }
 		const user = db.prepare('SELECT * FROM users WHERE id = ?').get(uid) as UserRecord | undefined
 
