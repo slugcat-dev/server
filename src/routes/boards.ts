@@ -46,7 +46,7 @@ export function postSync(req: Request, res: Response) {
 					}
 
 					db.prepare('INSERT INTO boards (id, owner, name, created, modified) VALUES (?, ?, ?, ?, ?)')
-						.run(operation.board.id, req.user.id, operation.board.name, operation.board.created, operation.board.created)
+						.run(operation.board.id, req.user.id, operation.board.name, new Date(operation.board.created).toISOString(), new Date(operation.board.created).toISOString())
 
 					break
 				}
@@ -63,7 +63,7 @@ export function postSync(req: Request, res: Response) {
 					}
 
 					db.prepare('UPDATE boards SET name = ?, modified = ? WHERE id = ?')
-						.run(operation.board.name, operation.board.modified, operation.board.id)
+						.run(operation.board.name, new Date(operation.board.modified).toISOString(), operation.board.id)
 
 					break
 				}
@@ -118,7 +118,7 @@ export function postSync(req: Request, res: Response) {
 				continue
 			}
 
-			db.prepare('UPDATE boards SET modified = ? WHERE id = ?').run(operation.card.modified, board.id)
+			db.prepare('UPDATE boards SET modified = ? WHERE id = ?').run(new Date(operation.card.modified).toISOString(), board.id)
 
 			switch (operation.type) {
 				// Create card
