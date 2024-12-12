@@ -46,7 +46,7 @@ export function postSync(req: Request, res: Response) {
 					}
 
 					db.prepare('INSERT INTO boards (id, owner, name, created, modified) VALUES (?, ?, ?, ?, ?)')
-						.run(operation.board.id, req.user.id, operation.board.name, new Date(operation.board.created).toISOString(), new Date(operation.board.created).toISOString())
+						.run(operation.board.id, req.user.id, operation.board.name, new Date(operation.board.created).toISOString(), new Date(operation.board.modified).toISOString())
 
 					break
 				}

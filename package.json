@@ -5,7 +5,7 @@
     "serve": "NODE_ENV=\"production\" esrun src/server.ts"
   },
   "dependencies": {
-    "better-sqlite3": "^11.6.0",
+    "better-sqlite3": "^11.7.0",
     "busboy": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -16,12 +16,16 @@
     "nanoid": "^5.0.9",
     "nodemailer": "^6.9.16",
     "ofetch": "^1.4.1",
-    "puppeteer": "^23.10.1",
+    "puppeteer": "^23.10.3",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-adblocker": "^2.13.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "sharp": "^0.33.5",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "ws": "^8.18.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.8"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
@@ -31,7 +35,8 @@
     "@types/fluent-ffmpeg": "^2.1.27",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.1",
-    "@types/nodemailer": "^6.4.17"
+    "@types/nodemailer": "^6.4.17",
+    "@types/ws": "^8.5.13"
   },
   "license": "MIT"
 }

@@ -3,6 +3,8 @@ import config from './config'
 import fs from 'fs'
 import cors from 'cors'
 import { router } from './router'
+import { WebSocketServer } from 'ws'
+import { onGatewayConnection, removeDeadClients } from './gateway'
 
 const app = express()
 const allowedOrigins = config.allowedOrigins?.split(',').map(origin => origin.trim())
@@ -22,6 +24,10 @@ app.use(cors({
 app.use(express.json())
 app.use(config.base, router)
 
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
 	console.log(`Server running on http://localhost:${config.port}`)
 })
+const gateway = new WebSocketServer({ server })
+
+gateway.on('connection', onGatewayConnection)
+setInterval(removeDeadClients, 30000)
